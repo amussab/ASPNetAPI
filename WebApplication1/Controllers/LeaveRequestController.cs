@@ -48,7 +48,10 @@ namespace WebApplication1.Controllers
             var employeeExists = await _context.Employees.AnyAsync(e => e.Id == dto.EmployeeId);
             if (!employeeExists)
                 return NotFound("Employee not found");
-
+            if (dto.EndDate <= dto.StartDate)
+            {
+                return BadRequest("End date cannot be before start date"); //cant have end date before start date, validation 
+            }
             var request = new LeaveRequest
             {
                 EmployeeId = dto.EmployeeId,
