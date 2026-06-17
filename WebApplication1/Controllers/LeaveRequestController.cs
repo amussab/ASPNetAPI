@@ -45,5 +45,32 @@ namespace WebApplication1.Controllers
 
             return Ok(request);
         }
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveLeaveRequest(int id)
+        {
+            var request = await _context.LeaveRequests.FindAsync(id);
+
+            if (request == null)
+                return NotFound("Leave request not found");
+
+            request.Status = "Approved";
+            await _context.SaveChangesAsync();
+
+            return Ok(request);
+        }
+
+        [HttpPut("{id}/reject")]
+        public async Task<IActionResult> RejectLeaveRequest(int id)
+        {
+            var request = await _context.LeaveRequests.FindAsync(id);
+
+            if (request == null)
+                return NotFound("Leave request not found");
+
+            request.Status = "Rejected";
+            await _context.SaveChangesAsync();
+
+            return Ok(request);
+        }
     }
 }
