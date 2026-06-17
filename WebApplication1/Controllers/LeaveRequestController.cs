@@ -1,0 +1,49 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.Data;
+using WebApplication1.DTO;
+using WebApplication1.Models;
+
+namespace WebApplication1.Controllers
+{
+    [ApiController]
+    [Route("leaverequests")]
+    public class LeaveRequestsController : ControllerBase
+    {
+        private readonly AppDbContext _context;
+
+        public LeaveRequestsController(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLeaveRequests()
+        {
+            var requests = await _context.LeaveRequests.ToListAsync();
+            return Ok(requests);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateLeaveRequest(CreateLeaveRequestDTO dto)
+        {
+            var employeeExists = await _context.Employees.AnyAsync(e => e.Id == dto.EmployeeId);
+            if (!employeeExists)
+                return NotFound("Employee not found");
+
+            var request = new LeaveRequest
+            {
+                EmployeeId = dto.EmployeeId,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate,
+                Reason = dto.Reason,
+                Status = "Pending"
+            };
+
+            _context.LeaveRequests.Add(request);
+            await _context.SaveChangesAsync();
+
+            return Ok(request);
+        }
+    }
+}
