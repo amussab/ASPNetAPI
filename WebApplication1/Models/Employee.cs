@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.Models
+﻿using System.Text.Json.Serialization;
+
+namespace WebApplication1.Models
 {
     public class Employee
     {
@@ -7,6 +9,8 @@
         public string LastName { get; set; } = "";
         public string Email { get; set; } = "";
         public string Department { get; set; } = "";
-        
+
+        [JsonIgnore]
+        public List<LeaveRequest> LeaveRequests { get; set; } = [];
     }
 }

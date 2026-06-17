@@ -20,8 +20,26 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLeaveRequests()
         {
-            var requests = await _context.LeaveRequests.ToListAsync();
-            return Ok(requests);
+            var requests = await _context.LeaveRequests
+            .Include(l => l.Employee)
+            .Select(l => new LeaveRequestResponseDTO
+    {
+            Id = l.Id,
+
+            EmployeeName =
+                l.Employee.FirstName + " " +
+                l.Employee.LastName,
+
+            StartDate = l.StartDate,
+
+            EndDate = l.EndDate,
+
+            Reason = l.Reason,
+
+            Status = l.Status
+            })
+            .ToListAsync();
+             return Ok(requests);
         }
 
         [HttpPost]

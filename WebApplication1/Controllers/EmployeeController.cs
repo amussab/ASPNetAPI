@@ -24,7 +24,7 @@ namespace WebApplication1.Controllers
             return Ok(employees);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] //get emp by id
         public async Task<IActionResult> GetEmployeeById(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -36,7 +36,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEmployee(CreateEmployeeDTO dto)
+        public async Task<IActionResult> CreateEmployee(CreateEmployeeDTO dto) //create new employee using employee dto
         {
             var employee = new Employee
             {
@@ -51,7 +51,7 @@ namespace WebApplication1.Controllers
 
             return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.Id }, employee);
         }
-        [HttpPut("{id}")]
+        [HttpPut("{id}")] //update emp info
         public async Task<IActionResult> UpdateEmployee(int id, CreateEmployeeDTO dto)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -68,7 +68,7 @@ namespace WebApplication1.Controllers
 
             return Ok(employee);
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")] /*delete emp*/
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -80,6 +80,29 @@ namespace WebApplication1.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        [HttpGet("{id}/leaverequests")] /*Used to only retrieve requests by emp id instead of returning the entire leave requests, avoiding overhead on db*/
+        public async Task<IActionResult> GetLeaveRequestsForEmployee(int id)
+        {
+            var employeeExists = await _context.Employees.AnyAsync(e => e.Id == id);
+
+            if (!employeeExists)
+                return NotFound("Employee not found");
+
+            var requests = await _context.LeaveRequests
+                .Where(l => l.EmployeeId == id)
+                .Select(l => new LeaveRequestResponseDTO
+                {
+                    Id = l.Id,
+                    EmployeeName = l.Employee.FirstName + " " + l.Employee.LastName,
+                    StartDate = l.StartDate,
+                    EndDate = l.EndDate,
+                    Reason = l.Reason,
+                    Status = l.Status
+                })
+                .ToListAsync();
+
+            return Ok(requests);
         }
     }
 }
