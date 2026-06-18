@@ -50,7 +50,7 @@ namespace WebApplication1.Controllers
                 return NotFound("Employee not found");
             if (dto.EndDate <= dto.StartDate)
             {
-                return BadRequest("End date cannot be before start date"); //cant have end date before start date, validation 
+                return BadRequest("End date cannot be before start date, ValidationError"); //cant have end date before start date, validation 
             }
             var request = new LeaveRequest
             {
@@ -66,7 +66,7 @@ namespace WebApplication1.Controllers
 
             return Ok(request);
         }
-        [HttpPut("{id}/approve")]
+        [HttpPut("{id}/approve")] //update based on id, approve leave request
         public async Task<IActionResult> ApproveLeaveRequest(int id)
         {
             var request = await _context.LeaveRequests.FindAsync(id);
@@ -80,7 +80,7 @@ namespace WebApplication1.Controllers
             return Ok(request);
         }
 
-        [HttpPut("{id}/reject")]
+        [HttpPut("{id}/reject")] //update based on id, reject leave request
         public async Task<IActionResult> RejectLeaveRequest(int id)
         {
             var request = await _context.LeaveRequests.FindAsync(id);

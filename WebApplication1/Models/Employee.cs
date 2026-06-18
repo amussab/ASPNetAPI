@@ -11,6 +11,6 @@ namespace WebApplication1.Models
         public string Department { get; set; } = "";
 
         [JsonIgnore]
-        public List<LeaveRequest> LeaveRequests { get; set; } = [];
+        public List<LeaveRequest> LeaveRequests { get; set; } = []; //had to include this to avoid circular reference when serializing to JSON
     }
 }
